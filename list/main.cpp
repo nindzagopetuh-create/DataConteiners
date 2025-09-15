@@ -248,36 +248,30 @@ void main()
 	list.reverse_print();
 	#endif // BASE_CHECK
 
-#ifdef ERASE_HOMEWORK
+//#ifdef ERASE_HOMEWORK
+	
+	int n;
+	int indx;
+	cout << "Введите размер списка: "; cin >> n;
 	List list;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < n; i++)
 	{
-		list.push_back(i);
+		list.push_back(rand() % 100);
 	}
+	cout << "введите index; "; cin >> indx;
+	list.erase(indx);
 	list.print();
 
-	// Удаляем элемент с индексом 3
-	list.erase(3);
-	list.print();
-
-	// Удаляем элемент с индексом 0 (первый)
-	list.erase(0);
-	list.print();
-
-	// Удаляем элемент с индексом 7 (последний, т.к. осталось 8 элементов)
-	list.erase(7);
-	list.print();
-
-#endif //ERASE_HOMEWORK
+//#endif //ERASE_HOMEWORK
 
 
-	#ifdef HOME_WORK
-		List list1 = { 3, 5, 8, 13, 21 };
-		List list2 = { 34, 55, 89 };
-		List list3 = list1 + list2;
-		for (int i : list1)cout << i << tab; cout << endl;
-		for (int i : list2)cout << i << tab; cout << endl;
-		for (int i : list3)cout << i << tab; cout << endl;
-	#endif // HOME_WORK
+	//#ifdef HOME_WORK
+	//	List list1 = { 3, 5, 8, 13, 21 };
+	//	List list2 = { 34, 55, 89 };
+	//	List list3 = list1 + list2;
+	//	for (int i : list1)cout << i << tab; cout << endl;
+	//	for (int i : list2)cout << i << tab; cout << endl;
+	//	for (int i : list3)cout << i << tab; cout << endl;
+	//#endif // HOME_WORK
 
 }
