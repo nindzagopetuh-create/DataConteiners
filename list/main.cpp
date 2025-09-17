@@ -32,6 +32,13 @@ public:
 		size = 0;
 		cout << "LConstructor:\t" << this << endl;
 	}
+	List(const std::initializer_list<int>& il) :List()
+	{
+		for (int const* it = il.begin(); it != il.end(); ++it)
+		{
+			push_front
+		}
+	}
 	~List()
 	{
 		//while (Head)pop_front();
