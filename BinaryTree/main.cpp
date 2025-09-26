@@ -1,12 +1,12 @@
 #include<iostream>
-#include <chrono>
+#include<time.h>
 using std::cin;
 using std::cout;
 using std::endl;
 
 #define tab "\t"
 
-#define DEBUG
+//#define DEBUG
 
 class Tree
 {
@@ -85,80 +85,15 @@ public:
 	{
 		return (double)sum(Root) / count(Root);
 	}
+	int depth()const
+	{
+		return depth(Root);
+	}
 	void print()const
 	{
 		print(Root);
 		cout << endl;
 	}
-
-	// 1. Метод depth() - возвращает глубину дерева
-	int depth() const
-	{
-		return depth(Root);
-	}
-
-	// 3. Метод tree_print() - выводит дерево в виде дерева
-	void tree_print() const
-	{
-		tree_print(Root, 0);
-	}
-
-	// 4. Метод Balance() - балансирует бинарное дерево
-	void Balance()
-	{
-		Balance(Root);
-	}
-
-	// 2. Методы для измерения производительности
-	void measure_performance() const
-	{
-		cout << "Измерение производительности методов:" << endl;
-
-		// Измерение minValue()
-		auto start = std::chrono::high_resolution_clock::now();
-		int min_val = minValue();
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		cout << "minValue(): " << min_val << " (время: " << duration.count() << " мкс)" << endl;
-
-		// Измерение maxValue()
-		start = std::chrono::high_resolution_clock::now();
-		int max_val = maxValue();
-		end = std::chrono::high_resolution_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		cout << "maxValue(): " << max_val << " (время: " << duration.count() << " мкс)" << endl;
-
-		// Измерение sum()
-		start = std::chrono::high_resolution_clock::now();
-		int sum_val = sum();
-		end = std::chrono::high_resolution_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		cout << "sum(): " << sum_val << " (время: " << duration.count() << " мкс)" << endl;
-
-		// Измерение count()
-		start = std::chrono::high_resolution_clock::now();
-		int count_val = count();
-		end = std::chrono::high_resolution_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		cout << "count(): " << count_val << " (время: " << duration.count() << " мкс)" << endl;
-
-		// Измерение depth()
-		start = std::chrono::high_resolution_clock::now();
-		int depth_val = depth();
-		end = std::chrono::high_resolution_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		cout << "depth(): " << depth_val << " (время: " << duration.count() << " мкс)" << endl;
-
-		// Измерение avg()
-		start = std::chrono::high_resolution_clock::now();
-		double avg_val = avg();
-		end = std::chrono::high_resolution_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		cout << "avg(): " << avg_val << " (время: " << duration.count() << " мкс)" << endl;
-
-		cout << endl;
-	}
-
 private:
 	void clear(Element*& Root)
 	{
@@ -197,13 +132,19 @@ private:
 			}
 			else
 			{
+				//Для того чтобы дерево балансировалось при удалении элементов,
+				//перед удалением его нужно взвесить:
 				if (count(Root->pLeft) > count(Root->pRight))
 				{
+					//и если левая ветка тяжелее чем правая, то берем из нее максимальное значение,
+					//потому что оно ближе всего к удаляемому значению:
 					Root->Data = maxValue(Root->pLeft);
 					erase(maxValue(Root->pLeft), Root->pLeft);
 				}
 				else
 				{
+					//в противном случае берем минимальное значение из правой ветки,
+					//потому что оно ближе всего к удавляемому значению:
 					Root->Data = minValue(Root->pRight);
 					erase(minValue(Root->pRight), Root->pRight);
 				}
@@ -213,20 +154,34 @@ private:
 	int minValue(Element* Root)const
 	{
 		return Root == nullptr ? INT_MIN : Root->pLeft == nullptr ? Root->Data : minValue(Root->pLeft);
+		/*if (Root->pLeft == nullptr)return Root->Data;
+		else return minValue(Root->pLeft);*/
 	}
 	int maxValue(Element* Root)const
 	{
 		return !Root ? INT_MIN : Root->pRight ? maxValue(Root->pRight) : Root->Data;
+		/*if (Root->pRight == nullptr)return Root->Data;
+		else return maxValue(Root->pRight);*/
 	}
 	int count(Element* Root)const
 	{
 		return !Root ? 0 : count(Root->pLeft) + count(Root->pRight) + 1;
+		/*if (Root == nullptr)return 0;
+		else return count(Root->pLeft) + count(Root->pRight) + 1;*/
 	}
 	int sum(Element* Root)const
 	{
 		return Root == nullptr ? 0 : sum(Root->pLeft) + sum(Root->pRight) + Root->Data;
 	}
 
+	int depth(Element* Root)const
+	{
+		return
+			Root == nullptr ? 0 :
+			depth(Root->pLeft) + 1 > depth(Root->pRight) + 1 ?
+			depth(Root->pLeft) + 1 :
+			depth(Root->pRight) + 1;
+	}
 	void print(Element* Root)const
 	{
 		if (Root == nullptr)return;
@@ -234,72 +189,7 @@ private:
 		cout << Root->Data << tab;
 		print(Root->pRight);
 	}
-
-	// 1. Вспомогательный метод для вычисления глубины
-	int depth(Element* Root) const
-	{
-		if (Root == nullptr) return 0;
-		int left_depth = depth(Root->pLeft);
-		int right_depth = depth(Root->pRight);
-		return 1 + (left_depth > right_depth ? left_depth : right_depth);
-	}
-
-	// 3. Вспомогательный метод для вывода дерева в виде дерева
-	void tree_print(Element* Root, int level) const
-	{
-		if (Root == nullptr) return;
-
-		tree_print(Root->pRight, level + 1);
-
-		for (int i = 0; i < level; i++)
-			cout << "    ";
-		cout << Root->Data << endl;
-
-		tree_print(Root->pLeft, level + 1);
-	}
-
-	// 4. Вспомогательные методы для балансировки дерева
-	void storeInorder(Element* Root, int* arr, int& index)
-	{
-		if (Root == nullptr) return;
-		storeInorder(Root->pLeft, arr, index);
-		arr[index++] = Root->Data;
-		storeInorder(Root->pRight, arr, index);
-	}
-
-	Element* buildBalancedTree(int* arr, int start, int end)
-	{
-		if (start > end) return nullptr;
-
-		int mid = (start + end) / 2;
-		Element* Root = new Element(arr[mid]);
-
-		Root->pLeft = buildBalancedTree(arr, start, mid - 1);
-		Root->pRight = buildBalancedTree(arr, mid + 1, end);
-
-		return Root;
-	}
-
-	void Balance(Element*& Root)
-	{
-		if (Root == nullptr) return;
-
-		int n = count(Root);
-		int* arr = new int[n];
-		int index = 0;
-
-		storeInorder(Root, arr, index);
-
-		// Очищаем старое дерево
-		clear(Root);
-
-		// Строим сбалансированное дерево
-		Root = buildBalancedTree(arr, 0, n - 1);
-
-		delete[] arr;
-	}
 };
-
 class UniqueTree :public Tree
 {
 	void insert(int Data, Element* Root)
@@ -324,7 +214,17 @@ public:
 	}
 };
 
+template<typename T>void measure_performance(const char message[], T(Tree::* function)()const, const Tree& tree)
+{
+	//int (*function)() - указатель на функцию, которая ничего не принимает, и возвращает значение типа 'int'.
+	clock_t start = clock();
+	T result = (tree.*function)();
+	clock_t end = clock();
+	cout << message << result << ", вычислено за " << double(end - start) / CLOCKS_PER_SEC << " секунд\n";
+}
+
 //#define BASE_CHECK
+//#define ERASE_CHECK
 
 void main()
 {
@@ -361,48 +261,46 @@ void main()
 	cout << "Среднее-арифметическое элементов дерева: " << u_tree.avg() << endl;
 #endif // BASE_CHECK
 
+#ifdef ERASE_CHECK
 	Tree tree =
 	{
 					50,
 
 			25,				75,
 
-		16,		32,		58,		85
+		16,		32,		58,		85,	91,	98
 	};
-
-	cout << "Исходное дерево:" << endl;
 	tree.print();
-	cout << "Глубина дерева: " << tree.depth() << endl;
-	cout << endl;
-
-	cout << "Дерево в виде дерева:" << endl;
-	tree.tree_print();
-	cout << endl;
-
-	// Измеряем производительность
-	tree.measure_performance();
 
 	int value;
 	//cout << "Введите удаляемое значение: "; cin >> value;
-	tree.erase(25);
+	/*tree.erase(25);
 	tree.erase(32);
 	tree.erase(50);
-	tree.erase(75);
-
-	cout << "Дерево после удаления элементов:" << endl;
+	tree.erase(75);*/
 	tree.print();
-	cout << "Глубина дерева после удаления: " << tree.depth() << endl;
-	cout << endl;
+	cout << "Грубина дерева: " << tree.depth() << endl;
+#endif // ERASE_CHECK
 
-	cout << "Балансировка дерева..." << endl;
-	tree.Balance();
+	int n;
+	cout << "Введите количество элементов: "; cin >> n;
+	Tree tree;
+	for (int i = 0; i < n; i++)
+	{
+		tree.insert(rand() % 100);
+	}
+	/*tree.print();
+	cout << "Минимальное значение в дереве: " << tree.minValue() << endl;
+	cout << "Максимальное значение в дереве: " << tree.maxValue() << endl;
+	cout << "Количество элементов дерева: " << tree.count() << endl;
+	cout << "Сумма элементов дерева: " << tree.sum() << endl;
+	cout << "Среднее-арифметическое элементов дерева: " << tree.avg() << endl;
+	cout << "Глубина дерева: " << tree.depth() << endl;*/
 
-	cout << "Дерево после балансировки:" << endl;
-	tree.tree_print();
-	cout << "Глубина дерева после балансировки: " << tree.depth() << endl;
-	cout << endl;
-
-	// Измеряем производительность после балансировки
-	tree.measure_performance();
+	measure_performance("Минимальное значение в дереве: ", &Tree::minValue, tree);
+	measure_performance("Максимальное значение в дереве: ", &Tree::maxValue, tree);
+	measure_performance("Сумма элемнтов дерева: ", &Tree::sum, tree);
+	measure_performance("Количество элемнтов дерева: ", &Tree::count, tree);
+	measure_performance("Среднее-арифметическо элемнтов дерева: ", &Tree::avg, tree);
 
 }
